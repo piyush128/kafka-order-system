@@ -1,9 +1,13 @@
 import kafka from "../../shared/config/kafka.js";
+import { Partitioners } from "kafkajs";
 
 const consumer = kafka.consumer({
     groupId: 'inventory-processing'
 })
-const producer = kafka.producer();
+
+const producer = kafka.producer({
+    createPartitioner: Partitioners.LegacyPartitioner
+})
 
 const startConsumer = async () => {
     await consumer.connect();

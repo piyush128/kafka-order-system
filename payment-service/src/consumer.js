@@ -1,11 +1,15 @@
 import kafka from "../../shared/config/kafka.js";
 import { retryWithBackoff } from "../../shared/utils/retry.js";
 import { redisClient } from "../utils/redis.js";
+import { Partitioners } from "kafkajs";
 
 const consumer = kafka.consumer({
     groupId: 'payment-processing'
 })
-const producer = kafka.producer();
+
+const producer = kafka.producer({
+    createPartitioner: Partitioners.LegacyPartitioner
+})
 
 const startConsumer = async () => {
     await consumer.connect();
