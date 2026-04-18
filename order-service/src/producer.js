@@ -3,6 +3,7 @@ import { randomUUID } from 'crypto';
 import { Partitioners } from 'kafkajs';
 
 const orders = Array.from({length: 10}, (element , i) =>({
+    version:Math.floor(Math.random() * 3) + 1,
     orderId: randomUUID(),
     userId: `user_${Date.now()}_${i}`,
     createdAt: new Date().toISOString(),

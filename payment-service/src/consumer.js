@@ -26,18 +26,31 @@ const startConsumer = async () => {
             const value =  message.value.toString();
             const key = message.key.toString();
             const payload = JSON.parse(value);
+            const version = payload.version ?? 1;
             try {
                 await retryWithBackoff(async () => {
                     console.log('Order received', payload);
                     const processedId = await redisClient.get(`processed:${payload.orderId}`);
                     if(!processedId){ 
-                        payload.status = 'payment-success';
+                        if(version > 2){
+                            console.warn(`Received unknown version ${version}, processed with known fields`);
+                        }
+                        const outgoingPayload = {
+                            version,
+                            orderId: payload.orderId,      // only what YOU know
+                            userId: payload.userId,
+                            totalPrice: payload.totalPrice,
+                            currency: payload.currency,
+                            status: 'payment-success',
+                            items: payload.items,
+                            createdAt: payload.createdAt
+                        } 
                         await producer.send({
                             topic: 'payment-processed',
                             messages: [
                                 {
                                     key: key,
-                                    value: JSON.stringify(payload),
+                                    value: JSON.stringify(outgoingPayload),
                                 }
                             ]
                         })
