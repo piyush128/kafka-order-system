@@ -81,7 +81,7 @@ kafka-order-system/
 ### 1. Clone the repository
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/piyush128/kafka-order-system.git
 cd kafka-order-system
 ```
 
